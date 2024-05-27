@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simon Game</title>
+<style>
+    .button {
+        width: 100px;
+        height: 100px;
+        margin: 20px;
+        border: 1px solid #000;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    .red { background-color: red; }
+    .blue { background-color: blue; }
+    .green { background-color: green; }
+    .yellow { background-color: yellow; }
+</style>
+</head>
+<body>
+<h1>Simon Game</h1>
+<div id="buttons">
+    <div class="button red" onclick="handleButtonClick('red')"></div>
+    <div class="button blue" onclick="handleButtonClick('blue')"></div>
+    <div class="button green" onclick="handleButtonClick('green')"></div>
+    <div class="button yellow" onclick="handleButtonClick('yellow')"></div>
+</div>
+<button onclick="startGame()">Start</button>
+
+<script>
+    const sequence = [];
+    let userSequence = [];
+    let level = 1;
+    let canClick = false;
+
+    function startGame() {
+        sequence.length = 0;
+        userSequence.length = 0;
+        level = 1;
+        generateSequence();
+        playSequence();
+        canClick = true;
+    }
+
+    function generateSequence() {
+        for (let i = 0; i < level; i++) {
+            sequence.push(getRandomColor());
+        }
+    }
+
+    function getRandomColor() {
+        const colors = ['red', 'blue', 'green', 'yellow'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function playSequence() {
+        let i = 0;
+        const interval = setInterval(() => {
+            const button = document.querySelector(`.${sequence[i]}`);
+            button.style.opacity = '0.5';
+            setTimeout(() => {
+                button.style.opacity = '1';
+            }, 300);
+            i++;
+            if (i >= sequence.length) {
+                clearInterval(interval);
+            }
+        }, 600);
+    }
+
+    function handleButtonClick(color) {
+        if (!canClick) return;
+        userSequence.push(color);
+        checkSequence();
+    }
+
+    function checkSequence() {
+        for (let i = 0; i < userSequence.length; i++) {
+            if (userSequence[i] !== sequence[i]) {
+                alert('Game Over! Wrong sequence.');
+                return;
+            }
+        }
+        if (userSequence.length === sequence.length) {
+            level++;
+            userSequence.length = 0;
+            generateSequence();
+            setTimeout(() => {
+                playSequence();
+            }, 1000);
+        }
+    }
+</script>
+</body>
+</html>

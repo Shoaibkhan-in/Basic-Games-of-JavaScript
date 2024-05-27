@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong Game</title>
+<style>
+    #gameArea {
+        width: 1000px;
+        height: 800px;
+        background-color: black;
+        position: relative;
+    }
+    #ball {
+        width: 30px;
+        height: 30px;
+        background-color: rgb(248, 2, 2);
+        position: absolute;
+    }
+    #paddleLeft, #paddleRight {
+        width: 20px;
+        height: 100px;
+        background-color: rgb(248, 2, 2);
+        position: absolute;
+    }
+    #paddleLeft {
+        left: 0;
+    }
+    #paddleRight {
+        right: 0;
+    }
+</style>
+</head>
+<body>
+<h1>Pong Game</h1>
+<p>Two Player Game</p>
+<div id="gameArea">
+    <div id="ball"></div>
+    <div id="paddleLeft"></div>
+    <div id="paddleRight"></div>
+</div>
+<script>
+    const gameArea = document.getElementById('gameArea');
+    const ball = document.getElementById('ball');
+    const paddleLeft = document.getElementById('paddleLeft');
+    const paddleRight = document.getElementById('paddleRight');
+    let dx = 1;
+    let dy = 1;
+    let leftPaddleSpeed = 0;
+    let rightPaddleSpeed = 0;
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'w') {
+            leftPaddleSpeed = -1;
+        }
+        if (event.key === 's') {
+            leftPaddleSpeed = 1;
+        }
+        if (event.key === 'ArrowUp') {
+            rightPaddleSpeed = -1;
+        }
+        if (event.key === 'ArrowDown') {
+            rightPaddleSpeed = 1;
+        }
+    });
+
+    document.addEventListener('keyup', function(event) {
+        if (event.key === 'w' || event.key === 's') {
+            leftPaddleSpeed = 0;
+        }
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            rightPaddleSpeed = 0;
+        }
+    });
+
+    function movePaddles() {
+        const leftPaddleTop = paddleLeft.offsetTop + leftPaddleSpeed * 5;
+        if (leftPaddleTop >= 0 && leftPaddleTop <= gameArea.clientHeight - paddleLeft.clientHeight) {
+            paddleLeft.style.top = leftPaddleTop + 'px';
+        }
+        const rightPaddleTop = paddleRight.offsetTop + rightPaddleSpeed * 5;
+        if (rightPaddleTop >= 0 && rightPaddleTop <= gameArea.clientHeight - paddleRight.clientHeight) {
+            paddleRight.style.top = rightPaddleTop + 'px';
+        }
+    }
+
+    function moveBall() {
+        const ballLeft = ball.offsetLeft + dx;
+        const ballTop = ball.offsetTop + dy;
+        if (ballTop <= 0 || ballTop >= gameArea.clientHeight - ball.clientHeight) {
+            dy = -dy;
+        }
+        if (ballLeft <= paddleLeft.offsetLeft + paddleLeft.clientWidth && ballTop + ball.clientHeight >= paddleLeft.offsetTop && ballTop <= paddleLeft.offsetTop + paddleLeft.clientHeight) {
+            dx = -dx;
+        }
+        if (ballLeft + ball.clientWidth >= paddleRight.offsetLeft && ballTop + ball.clientHeight >= paddleRight.offsetTop && ballTop <= paddleRight.offsetTop + paddleRight.clientHeight) {
+            dx = -dx;
+        }
+        if (ballLeft < 0 || ballLeft > gameArea.clientWidth - ball.clientWidth) {
+            alert('Game Over!');
+            window.location.reload();
+        }
+        ball.style.left = ballLeft + 'px';
+        ball.style.top = ballTop + 'px';
+    }
+
+    function updateGame() {
+        movePaddles();
+        moveBall();
+    }
+
+    setInterval(updateGame, 10);
+</script>
+</body>
+</html>

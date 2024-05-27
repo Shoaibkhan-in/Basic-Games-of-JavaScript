@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackjack</title>
+</head>
+<body>
+<h1>Blackjack (21)</h1>
+<button onclick="startGame()">Start Game</button>
+<button onclick="hit()">Hit</button>
+<button onclick="stand()">Stand</button>
+<p>Player's Hand: <span id="playerHand"></span></p>
+<p>Dealer's Hand: <span id="dealerHand"></span></p>
+<p>Player's Score: <span id="playerScore"></span></p>
+<p>Dealer's Score: <span id="dealerScore"></span></p>
+<p id="result"></p>
+
+<script>
+    const cards = [
+        '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A',
+        '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A',
+        '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A',
+        '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'
+    ];
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let playerScore = 0;
+    let dealerScore = 0;
+
+    function startGame() {
+        deck = [...cards];
+        playerHand = [];
+        dealerHand = [];
+        playerScore = 0;
+        dealerScore = 0;
+        document.getElementById('result').textContent = '';
+
+        for (let i = 0; i < 2; i++) {
+            dealCard(playerHand);
+            dealCard(dealerHand);
+        }
+        updateScore();
+        displayHands();
+    }
+
+    function dealCard(hand) {
+        const index = Math.floor(Math.random() * deck.length);
+        const card = deck.splice(index, 1)[0];
+        hand.push(card);
+    }
+
+    function calculateScore(hand) {
+        let score = 0;
+        let hasAce = false;
+        for (const card of hand) {
+            if (card === 'A') {
+                hasAce = true;
+            } else if (card === 'J' || card === 'Q' || card === 'K') {
+                score += 10;
+            } else {
+                score += parseInt(card);
+            }
+        }
+        if (hasAce) {
+            if (score + 11 <= 21) {
+                score += 11;
+            } else {
+                score += 1;
+            }
+        }
+        return score;
+    }
+
+    function updateScore() {
+        playerScore = calculateScore(playerHand);
+        dealerScore = calculateScore(dealerHand);
+        document.getElementById('playerScore').textContent = playerScore;
+        document.getElementById('dealerScore').textContent = dealerScore;
+    }
+
+    function displayHands() {
+        document.getElementById('playerHand').textContent = playerHand.join(', ');
+        document.getElementById('dealerHand').textContent = dealerHand.join(', ');
+    }
+
+    function hit() {
+        if (playerScore < 21) {
+            dealCard(playerHand);
+            updateScore();
+            displayHands();
+            if (playerScore > 21) {
+                document.getElementById('result').textContent = 'Player busts. Dealer wins!';
+            }
+        }
+    }
+
+    function stand() {
+        while (dealerScore < 17) {
+            dealCard(dealerHand);
+            updateScore();
+            displayHands();
+        }
+        if (dealerScore > 21 || playerScore > dealerScore) {
+            document.getElementById('result').textContent = 'Player wins!';
+        } else if (playerScore < dealerScore) {
+            document.getElementById('result').textContent = 'Dealer wins!';
+        } else {
+            document.getElementById('result').textContent = 'It\'s a tie!';
+        }
+    }
+</script>
+</body>
+</html>
